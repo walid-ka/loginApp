@@ -150,40 +150,6 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 ?>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registration Page</title>
-    <link rel="stylesheet" href="css/style.css">
-</head>
-
-<body class="register">
-    <nav>
-    <ul>
-        <li>
-            <a href="index.php">Home</a>
-        </li>
-
-        <!-- When the user is logged in -->
-        <li>
-            <a href="admin.html">Admin</a>
-        </li>
-        <li>
-            <a href="logout.html">Logout</a>
-        </li>
-
-        <!-- When the user is not logged in -->
-        <li>
-            <a href="register.php">Register</a>
-        </li>
-        <li>
-            <a href="login.php">Login</a>
-        </li>
-    </ul>
-    </nav>
     
     <div class="container"> 
         <div class="form-container"> 
