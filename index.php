@@ -2,7 +2,7 @@
 
 
 
-<div class="container">
+
     <div class="hero">
         <div class="hero-content">
             <h1>Welcome to our PHP App</h1>
@@ -10,7 +10,7 @@
             <div class="hero-buttons">
 
             <?php if(isLoggedIn()) : ?> 
-                    <a class="btn" href="admin.php">Admin</a>
+                    <a class="btn" href="app.php">App</a>
                     <a class="btn" href="logout.php">Logout</a>
             
             <?php else:  ?>
@@ -21,7 +21,7 @@
         </div>
         </div>
     </div>
-</div>
+
 
 <?php include "./components/footer.php"; ?>
 

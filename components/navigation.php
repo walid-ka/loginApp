@@ -4,17 +4,29 @@
             <a class="<?php echo activeLink("index.php") ?>" href="index.php">Home</a>
         </li>
 
-        <?php if(isLoggedIn()) : ?> 
+        <?php if(isLoggedIn() && !isAdmin()) : ?> 
             
         <li>
+            <a class="<?php echo activeLink("app.php") ?>" href="app.php">App</a>
+        </li>
+        <li>
+            <a class="<?php echo activeLink("logout.php") ?>" href="logout.php">Logout</a>
+        </li>
+
+        <?php elseif(isLoggedIn() && isAdmin()): ?> 
+        <li>
+            <a class="<?php echo activeLink("app.php") ?>" href="app.php">App</a>
+        </li>
+
+         <li>
             <a class="<?php echo activeLink("admin.php") ?>" href="admin.php">Admin</a>
         </li>
         <li>
             <a class="<?php echo activeLink("logout.php") ?>" href="logout.php">Logout</a>
         </li>
 
-        <?php else:  ?>
 
+        <?php else:  ?>
         <li>
             <a class="<?php echo activeLink("register.php") ?>" href="register.php">Register</a>
         </li>

@@ -136,6 +136,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt->bind_param("sssissi", $username, $email, $hashedPassword, $age, $phone, $gender, $terms);
     
             if ($stmt->execute()) {
+                session_regenerate_id(true); // This is a security measure to prevent session hijacking 
                 $_SESSION["logged_in"] = true; // This is how we know the user is logged in
                 $_SESSION["username"] = $username;
                 redirect("admin.php");

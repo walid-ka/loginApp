@@ -114,12 +114,21 @@ nav ul li a.active {
 
 .container {
     height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.tableContainer {
+    margin: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 /* Form Styling */
 .form-container {
-    max-width: 400px;
-    margin: auto;
+    width: 400px;
     display: flex;
     justify-content: center;
     align-items: center;

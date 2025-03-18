@@ -7,6 +7,7 @@ if(!isLoggedIn()){
 }
 
 
+
 //! Fetch all users
 $sql = "SELECT * FROM users";
 $stmt = $conn->prepare($sql); // prepare() : prepares the SQL query, but does not execute it yet, its for security reasons to prevent SQL injection 
@@ -70,9 +71,13 @@ if($_SERVER["REQUEST_METHOD"] === "POST") { // to detect any request method equa
 <?php endif; ?>
 
 
-<h1>Welcome <?php echo $_SESSION["username"] ?></h1>
+<?php if(isAdmin()): ?>
+    <h1 style="text-align:center; margin-top:60px;">Welcome <?php echo $_SESSION["username"] ?></h1>
+<?php else: ?>
+    <?php redirect("app.php"); ?>
+<?php endif; ?>
 
-<div class="container">
+<div class="tableContainer">
     <table class="user-table">
         <thead>
         <tr>

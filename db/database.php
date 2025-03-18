@@ -16,18 +16,5 @@ if ($conn->connect_error) {
 // }
 
 
-//! to check if the server is working
-function checkServer($conn, $result) {
-    if (!$result) {
-        die("Query failed: " . $conn->error);
-    }
-
-    return true;
-}
-
-//! Create a new user
-function createUser() {
-    
-}
 
 ?>
