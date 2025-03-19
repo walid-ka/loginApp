@@ -2,6 +2,8 @@
 
 include "./components/header.php";
 
+// Destroying a Session
+
 session_start();
 
 session_unset();

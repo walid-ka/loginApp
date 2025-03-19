@@ -1,6 +1,5 @@
-
-
 <?php 
+
 include "./components/header.php";
 
 
@@ -15,113 +14,63 @@ $successMessage= "";
 
 if($_SERVER["REQUEST_METHOD"] == "POST") {
 
-    //! Create a new user
-
-    $username = $_POST["username"];
-    $email = $_POST["email"];
-    $password = $_POST["password"];
-    $confPassword = $_POST["confPassword"];
-    $age = $_POST["age"];
-    $phone = $_POST["phone"];
-    $gender = $_POST["gender"];
-    $terms = $_POST["terms"];
+    $username = mysqli_real_escape_string($conn, $_POST["username"]);
+    $email = mysqli_real_escape_string($conn, $_POST["email"]);
+    $password = trim($_POST["password"]);
+    $confPassword = trim($_POST["confPassword"]);
+    $age = mysqli_real_escape_string($conn, $_POST["age"]);
+    $phone = filter_var(trim($_POST["phone"]), FILTER_SANITIZE_NUMBER_INT);
+    $gender = mysqli_real_escape_string($conn, $_POST["gender"]);
+    $terms = isset($_POST["terms"]) ? 1 : 0;
     
 
-
-    if(empty($username)) {
-        $usernameErr = "Username is required";
-    } else {
-        $username = mysqli_real_escape_string($conn, $username);
-        if(!preg_match("/^[a-zA-Z0-9_]{5,20}$/", $username)) {
-          $usernameErr = "Username must be 5-20 chars (letters, numbers, underscore)";
-        }
+    // Validate username
+    if (empty($username) || !preg_match("/^[a-zA-Z0-9_]{5,20}$/", $username)) {
+        $usernameErr = "Username must be 5-20 chars (letters, numbers, underscore)";
     }
 
-
-
-    if(empty($email)) {
-        $usernameErr = "Email is required";
-    } else {
-        $email = mysqli_real_escape_string($conn, $email);
-        if(!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-          $emailErr = "Invalid email format)";
-        }
+    // Validate email
+    if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $emailErr = "Invalid email format";
     }
 
-
-
-     if (empty($password)) {
-        $passwordErr = "Password is required";
-    } else {
-        $password = trim($password);
-        
-        if (
-            strlen($password) < 8 || 
-            !preg_match("/[A-Z]/", $password) || 
-            !preg_match("/[a-z]/", $password) || 
-            !preg_match("/[0-9]/", $password)
-        ) {
-            $passwordErr = "Password must be at least 8 characters, include 1 uppercase letter, 1 lowercase letter, and 1 number.";
-        }
+    // Validate password
+    if (empty($password) || strlen($password) < 8 || !preg_match("/[A-Z]/", $password) || !preg_match("/[a-z]/", $password) || !preg_match("/[0-9]/", $password)) {
+        $passwordErr = "Password must be at least 8 characters, include 1 uppercase, 1 lowercase, and 1 number.";
     }
 
-    if (empty($confPassword)) {
-        $confPasswordErr = "Confirmation password is required";
-    } else {
-        $confPassword = trim($confPassword);
-        
-        if ($password !== $confPassword) {
-            $confPasswordErr = "Passwords do not match";
-        }
+    // Confirm password match
+    if ($password !== $confPassword) {
+        $confPasswordErr = "Passwords do not match";
     }
 
+    // Hash the password if valid
     if (empty($passwordErr) && empty($confPasswordErr)) {
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
     }
 
-
-
-    if (empty($age)) {
-        $ageErr = "Age is required";
-    } else {
-        $age = mysqli_real_escape_string($conn, $age);
-        if ($age < 18 || $age > 100) {
-            $ageErr = "Age must be between 18 and 100";
-        }
+    // Validate age
+    if (empty($age) || $age < 18 || $age > 100) {
+        $ageErr = "Age must be between 18 and 100";
     }
 
-
-    if (empty($phone)) {
-        $phoneErr = "Phone number is required";
-    } else {
-        $phone = filter_var(trim($phone), FILTER_SANITIZE_NUMBER_INT);
-        if (!preg_match("/^[0-9]{10,15}$/", $phone)) {
-            $phoneErr = "Invalid phone number (10-15 digits)";
-        }
+    // Validate phone number
+    if (empty($phone) || !preg_match("/^[0-9]{10,15}$/", $phone)) {
+        $phoneErr = "Invalid phone number (10-15 digits)";
     }
 
-
-    if (empty($gender)) {
-        $genderErr = "Gender is required";
-    } else {
-        $gender = mysqli_real_escape_string($conn, $gender);
-    }
-
-
-    if (!isset($terms)) {
+    // Ensure terms are accepted
+    if (!$terms) {
         $termsErr = "You must agree to the terms and conditions";
-    } else {
-        $terms = 1; 
     }
 
 
     
-
+    // If all validations pass, proceed with registration
     if (!$usernameErr && !$emailErr && !$passwordErr && !$confPasswordErr && !$ageErr && !$phoneErr && !$genderErr && !$termsErr) {
 
-        // Check if username or email already exists
-        $checkUser = "SELECT * FROM users WHERE username = ? OR email = ?";
-        $stmtCheck = $conn->prepare($checkUser);
+        // Check if username or email already exists, preventing duplicate registrations
+        $stmtCheck = $conn->prepare("SELECT * FROM users WHERE username = ? OR email = ?");
         $stmtCheck->bind_param("ss", $username, $email);
         $stmtCheck->execute();
         $result = $stmtCheck->get_result();
@@ -131,13 +80,12 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
             $usernameErr = "Username or email already exists";
         } else {
             // Insert user into database
-            $sql = "INSERT INTO users (username, email, password, age, phone, gender, terms) VALUES (?, ?, ?, ?, ?, ?, ?)";
-            $stmt = $conn->prepare($sql);
+            $stmt = $conn->prepare("INSERT INTO users (username, email, password, age, phone, gender, terms) VALUES (?, ?, ?, ?, ?, ?, ?)");
             $stmt->bind_param("sssissi", $username, $email, $hashedPassword, $age, $phone, $gender, $terms);
     
             if ($stmt->execute()) {
-                session_regenerate_id(true); // This is a security measure to prevent session hijacking 
-                $_SESSION["logged_in"] = true; // This is how we know the user is logged in
+                session_regenerate_id(true); // Prevent session hijacking
+                $_SESSION["logged_in"] = true;
                 $_SESSION["username"] = $username;
                 redirect("admin.php");
             } else {

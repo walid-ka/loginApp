@@ -10,13 +10,13 @@ if(!isLoggedIn()){
 
 //! Fetch all users
 $sql = "SELECT * FROM users";
-$stmt = $conn->prepare($sql); // prepare() : prepares the SQL query, but does not execute it yet, its for security reasons to prevent SQL injection 
+$stmt = $conn->prepare($sql);
 $stmt->execute();
 $result = $stmt->get_result();
 
 
 
-if($_SERVER["REQUEST_METHOD"] === "POST") { // to detect any request method equal to POST
+if($_SERVER["REQUEST_METHOD"] === "POST") { 
 
     //! Update user
     if(isset($_POST["editUser"])) {
@@ -57,6 +57,8 @@ if($_SERVER["REQUEST_METHOD"] === "POST") { // to detect any request method equa
 
 
 ?>
+
+<!-- Accessing Session Data on Another Page  if (isset($_SESSION["username"])) -->
 
 <?php if(isset($_SESSION["toast"])): ?>
     <div class="toast <?php echo $_SESSION["toast"]["type"]; ?>">
